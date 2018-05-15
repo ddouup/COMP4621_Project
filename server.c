@@ -6,15 +6,18 @@
 #include <netinet/in.h>
 #include <time.h>
 
-#define MAXLINE 100
+#define MAXLINE 1000
 #define SERVER_PORT 12345
 #define LISTENNQ 5
+#define MAXTHREAD 5
 
 struct thread_info {    /* Used as argument to request_func() */
     int connfd;
     char wrt_buff[MAXLINE];
     char rcv_buff[MAXLINE];
 };
+
+void* request_func(void *args);
 
 int main(int argc, char **argv)
 {
@@ -24,7 +27,7 @@ int main(int argc, char **argv)
         struct sockaddr_in serv_addr, cli_addr;
         socklen_t len = sizeof(struct sockaddr_in);
         char ip_str[INET_ADDRSTRLEN];
-        //char wrt_buff[MAXLINE], rcv_buff[MAXLINE];
+        char wrt_buff[MAXLINE], rcv_buff[MAXLINE];
 
     int threads_count = 0;
     pthread_t threads[MAXTHREAD];
@@ -106,7 +109,7 @@ void* request_func(void *args)
     //connfd = tinfo->connfd;
     //wrt_buff = tinfo->wrt_buff;
     //rcv_buff = tinfo->rcv_buff;
-    int connfd = (int)args;
+    connfd = (int)args;
     memset(&wrt_buff, 0, sizeof(wrt_buff));
     memset(&rcv_buff, 0, sizeof(rcv_buff));
 
