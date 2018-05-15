@@ -72,10 +72,7 @@ int main(int argc, char **argv)
                 inet_ntop(AF_INET, &(cli_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
                 printf("Incoming connection from %s : %hu\n", ip_str, ntohs(cli_addr.sin_port));
 
-                /*struct thread_info args;
-                args.connfd = connfd;
-                args.wrt_buff = wrt_buff;
-                args.rcv_buff = rcv_buff;*/
+                //struct thread_info args;
 
                 if (pthread_create(&threads[threads_count], NULL, request_func, (void *)connfd) != 0) {
                     printf("Error when creating thread %d\n", threads_count);
@@ -106,10 +103,10 @@ void* request_func(void *args)
     char filename[128];
     int index = 0;
 
+    printf("heavy computation\n");
+    sleep(5);
+
     /* get the thread info */
-    //connfd = tinfo->connfd;
-    //wrt_buff = tinfo->wrt_buff;
-    //rcv_buff = tinfo->rcv_buff;
     connfd = (int)args;
     memset(&wrt_buff, 0, sizeof(wrt_buff));
     memset(&rcv_buff, 0, sizeof(rcv_buff));
