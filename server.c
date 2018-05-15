@@ -72,10 +72,10 @@ int main(int argc, char **argv)
                 inet_ntop(AF_INET, &(cli_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
                 printf("Incoming connection from %s : %hu\n", ip_str, ntohs(cli_addr.sin_port));
 
-                struct thread_info args;
+                /*struct thread_info args;
                 args.connfd = connfd;
                 args.wrt_buff = wrt_buff;
-                args.rcv_buff = rcv_buff;
+                args.rcv_buff = rcv_buff;*/
 
                 if (pthread_create(&threads[threads_count], NULL, request_func, (void *)connfd) != 0) {
                     printf("Error when creating thread %d\n", threads_count);
@@ -88,7 +88,8 @@ int main(int argc, char **argv)
                 
         }
         printf("Nax thread number reached, wait for all threads to finish and exit...\n");
-        for (int i = 0; i < MAXTHREAD; ++i) {
+        int i;
+        for (i = 0; i < MAXTHREAD; ++i) {
             pthread_join(threads[i], NULL);
         }
 
