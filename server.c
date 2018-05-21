@@ -8,7 +8,7 @@
 #include <time.h>
 #include <assert.h>
 
-#define MAXLINE 4096
+#define MAXLINE 1000
 #define SERVER_PORT 12345
 #define LISTENNQ 5
 #define MAXTHREAD 10
@@ -143,7 +143,6 @@ void* request_func(void *args)
 
     if(strcmp(filename, "/")==0){
         strcpy(filename, "/index.html.gz");
-        GZIP = 1;
     }
     strcpy(filename,filename+1);
     ext = file_ext(filename);
@@ -158,6 +157,10 @@ void* request_func(void *args)
         type = "application/pdf";
     else if (strcmp(ext, ".pptx")==0)
         type = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    else if (strcmp(ext, ".gz")==0){
+        GZIP = 1;
+        type = "";
+    }
     else{
         type = "";
         printf("Invaild type" );
@@ -167,7 +170,7 @@ void* request_func(void *args)
     
     file = fopen(filename, "r");
     if (!file) {
-        printf("404 Not Found\n");
+        printf("404 Not Found\n\n");
         snprintf(wrt_buff, sizeof(wrt_buff) - 1, 
         "HTTP/1.1 404 Not Found\r\n\
         Server: COMP4621_Project\r\n\
@@ -184,7 +187,7 @@ void* request_func(void *args)
         </html>");
         write(connfd, wrt_buff, strlen(wrt_buff));
     } else {
-        printf("200 OK\n");
+        printf("200 OK\n\n");
         //get file size
         fseek(file, 0L, SEEK_END);
         fsize = ftell(file);
@@ -202,8 +205,10 @@ void* request_func(void *args)
             snprintf(wrt_buff, sizeof(wrt_buff) - 1, "Content-Length: %d\r\n", fsize);
         write(connfd, wrt_buff, strlen(wrt_buff));
         
-        snprintf(wrt_buff, sizeof(wrt_buff) - 1, "Content-Type: %s\r\n", type);
-        write(connfd, wrt_buff, strlen(wrt_buff));
+        if(type != ""){
+            snprintf(wrt_buff, sizeof(wrt_buff) - 1, "Content-Type: %s\r\n", type);
+            write(connfd, wrt_buff, strlen(wrt_buff));
+        }
 
         if (GZIP){
             snprintf(wrt_buff, sizeof(wrt_buff) - 1, "Content-Encoding: gzip\r\n");
